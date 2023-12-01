@@ -72,11 +72,17 @@ def Home(request):
     template_name = "dashboard/home.html"
     userprofile = UserProfile.objects.get(user=request.user)
     task = Task.objects.filter(created_by=userprofile)
+    completed = Task.objects.filter(completed=True, created_by=userprofile)
+    incompleted = Task.objects.filter(completed=False, created_by=userprofile)
+    total_incompleted_task =Task.objects.filter(completed=False, created_by=userprofile).count()
     context = {
-        'task' : task
+        'task': task,
+        'completed' : completed,
+        'incompleted' : incompleted,
+        'total_incompleted_task' : total_incompleted_task
     }
-    return render(request, template_name, context)
-
+    return render(request,template_name,context)
+    
 
 def TaskDetail(request, pk):
     template_name = "dashboard/detail.html"
