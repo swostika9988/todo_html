@@ -83,7 +83,7 @@ def Home(request):
     }
     return render(request,template_name,context)
     
-
+@login_required()
 def TaskDetail(request, pk):
     template_name = "dashboard/detail.html"
     task = Task.objects.get(id=pk)
@@ -92,3 +92,49 @@ def TaskDetail(request, pk):
     }
     return render(request, template_name, context)
 
+@login_required()
+def AddTask(request):
+    template_name = 'dashboard/addtask.html'
+    userprofile = UserProfile.objects.get(user=request.user)
+    form = TaskForm
+    if request.method == 'POST':
+        form = TaskForm(request.POST, request.FILES)
+        form.instance.created_by = userprofile
+        if form.is_valid():
+                form.save()
+                return redirect('addtask')
+    context = {
+        'form' : form,
+    }
+    return render(request, template_name, context)
+
+@login_required()
+def EditTask(request,pk):
+    template_name = 'dashboard/edittask.html'
+    task = Task.objects.get(id=pk)
+    form = EditTaskForm
+    if request.method == 'POST':
+        form = EditTaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('home') 
+        else:
+            form = EditTaskForm(instance=task)
+    context = {
+        'task': task,
+        'form': form
+    }
+    return render(request,template_name,context)
+
+@login_required()
+def DeleteTask(request,pk):
+    template_name = 'dashboard\deletetask.html'
+    task = Task.objects.get(id=pk)
+    if request.method=='POST':
+     task.delete()
+     return redirect('/')
+    context={ 
+   
+    'task' : task
+    }
+    return render(request,template_name,context)
