@@ -138,3 +138,4 @@ def DeleteTask(request,pk):
     'task' : task
     }
     return render(request,template_name,context)
+
